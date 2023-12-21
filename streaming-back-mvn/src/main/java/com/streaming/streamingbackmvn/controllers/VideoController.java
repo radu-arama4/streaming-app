@@ -5,22 +5,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@RestController("api/v1/video")
+@RestController
+@RequestMapping("api/v1")
 public class VideoController {
 
-    @Autowired
-    VideoService videoService;
+  @Autowired
+  VideoService videoService;
 
-    @GetMapping("/{videoId}")
-    public void getVideo(@PathVariable(value = "videoId") String videoId){
+  @GetMapping("/video/{videoId}")
+  public void getVideo(@PathVariable(value = "videoId") String videoId) {
 
-    }
+  }
 
-    @PostMapping
-    public void uploadVideo(@RequestBody MultipartFile file){
-        //TODO: Perform checking for the file format
-        videoService.uploadVideo();
+  @PostMapping("/video/")
+  public void uploadVideo(@RequestBody MultipartFile file) {
+    //TODO: Perform checking for the file format
+    videoService.uploadVideo();
 
-    }
+  }
 
 }

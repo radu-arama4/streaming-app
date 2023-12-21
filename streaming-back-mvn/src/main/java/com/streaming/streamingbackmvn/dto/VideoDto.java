@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VideoDto {
-    private String videoId;
-    private String fileName;
+
+  private String videoId;
+  private String fileName;
 }
