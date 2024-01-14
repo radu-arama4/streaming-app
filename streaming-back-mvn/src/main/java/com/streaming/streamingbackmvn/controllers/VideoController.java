@@ -1,5 +1,6 @@
 package com.streaming.streamingbackmvn.controllers;
 
+import com.streaming.streamingbackmvn.services.VideoFormatCheckerService;
 import com.streaming.streamingbackmvn.services.VideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ public class VideoController {
   @Autowired
   VideoService videoService;
 
+  @Autowired
+  VideoFormatCheckerService videoFormatCheckerService;
+
   @GetMapping("/video/{videoId}")
   public void getVideo(@PathVariable(value = "videoId") String videoId) {
 
@@ -21,10 +25,12 @@ public class VideoController {
 
   @PostMapping("/video")
   public void uploadVideo(@RequestParam("video") MultipartFile video) {
-    //TODO: Perform checking for the file format
-    log.info("File of size - " + video.getSize() + " intercepted!");
-    videoService.uploadVideo();
+    if (!videoFormatCheckerService.isVideoValid(video)) {
+      log.warn("Video format not valid!");
+      return;
+    }
 
+    videoService.uploadVideo(video);
   }
 
 }

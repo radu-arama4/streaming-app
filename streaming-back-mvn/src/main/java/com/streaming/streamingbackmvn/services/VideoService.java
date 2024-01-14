@@ -1,8 +1,10 @@
 package com.streaming.streamingbackmvn.services;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public interface VideoService {
 
-  void uploadVideo();
+  void uploadVideo(MultipartFile video);
 
   String getVideo();
 
