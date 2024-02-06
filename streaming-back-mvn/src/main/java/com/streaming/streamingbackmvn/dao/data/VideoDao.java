@@ -17,6 +17,7 @@ public class VideoDao {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer videoId;
   private String originalFileName;
+  private String contentType;
   private String location;
   private Instant uploadTime;
 }

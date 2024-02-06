@@ -1,15 +1,20 @@
 package com.streaming.streamingbackmvn.services.impl;
 
-import com.streaming.streamingbackmvn.dao.repository.VideoRepository;
 import com.streaming.streamingbackmvn.dao.data.VideoDao;
+import com.streaming.streamingbackmvn.dao.repository.VideoRepository;
+import com.streaming.streamingbackmvn.dto.ChunkWithMetadataDto;
+import com.streaming.streamingbackmvn.dto.Range;
 import com.streaming.streamingbackmvn.services.VideoService;
+import com.streaming.streamingbackmvn.services.util.FileChunkUtil;
 import jakarta.annotation.PostConstruct;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,7 @@ public class VideoServiceImpl implements VideoService {
       String absolutePath = file.getAbsolutePath();
       dbVideo.setLocation(absolutePath);
       dbVideo.setOriginalFileName(video.getOriginalFilename());
+      dbVideo.setContentType(video.getContentType());
       dbVideo.setUploadTime(Instant.now());
 
       videoRepository.save(dbVideo);
@@ -61,8 +67,31 @@ public class VideoServiceImpl implements VideoService {
   }
 
   @Override
-  public String getVideo() {
-    return null;
+  public ChunkWithMetadataDto getVideo(String videoId, Range range) {
+    Optional<VideoDao> video = videoRepository.findById(videoId);
+
+    if (video.isPresent()) {
+      VideoDao videoDao = video.get();
+      String absoluteVideoLocation = videoDao.getLocation();
+      File existingVideo = new File(absoluteVideoLocation);
+      try {
+        InputStream inputStream = new FileInputStream(existingVideo);
+        int chunkSize = FileChunkUtil.calculateChunkSize(range, existingVideo.length());
+        byte[] chunkBytes = inputStream.readNBytes(chunkSize);
+
+        ChunkWithMetadataDto chunkWithMetadataDto = ChunkWithMetadataDto.builder().build();
+        chunkWithMetadataDto.setChunk(chunkBytes);
+        chunkWithMetadataDto.setContentType(videoDao.getContentType());
+        chunkWithMetadataDto.setFileSize(existingVideo.length());
+
+        return chunkWithMetadataDto;
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    log.warn("No video was found for given ID");
+    return ChunkWithMetadataDto.builder().build();
   }
 
   @Override
