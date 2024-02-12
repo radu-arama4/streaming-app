@@ -4,6 +4,7 @@ import com.streaming.streamingbackmvn.dao.data.VideoDao;
 import com.streaming.streamingbackmvn.dao.repository.VideoRepository;
 import com.streaming.streamingbackmvn.dto.ChunkWithMetadataDto;
 import com.streaming.streamingbackmvn.dto.Range;
+import com.streaming.streamingbackmvn.dto.VideoDto;
 import com.streaming.streamingbackmvn.services.VideoService;
 import com.streaming.streamingbackmvn.services.util.FileChunkUtil;
 import jakarta.annotation.PostConstruct;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -95,7 +97,25 @@ public class VideoServiceImpl implements VideoService {
   }
 
   @Override
-  public String removeVideo() {
+  public VideoDto removeVideo(String videoId) {
+    Optional<VideoDao> video = videoRepository.findById(videoId);
+
+    if (video.isPresent()) {
+      VideoDao videoDao = video.get();
+      videoRepository.delete(videoDao);
+
+      String absolutePath = videoDao.getLocation();
+      File existingFile = new File(absolutePath);
+
+      if (existingFile.delete()) {
+        log.info("Video with ID " + videoId + " deleted!");
+        VideoDto videoDto = new VideoDto();
+        BeanUtils.copyProperties(video, videoDto);
+        return videoDto;
+      }
+    }
+
+    log.warn("Video with ID " + videoId + " not found!");
     return null;
   }
 }

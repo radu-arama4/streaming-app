@@ -2,6 +2,7 @@ package com.streaming.streamingbackmvn.controllers;
 
 import com.streaming.streamingbackmvn.dto.ChunkWithMetadataDto;
 import com.streaming.streamingbackmvn.dto.Range;
+import com.streaming.streamingbackmvn.dto.VideoDto;
 import com.streaming.streamingbackmvn.services.VideoFormatCheckerService;
 import com.streaming.streamingbackmvn.services.VideoService;
 import lombok.extern.slf4j.Slf4j;
@@ -61,4 +62,8 @@ public class VideoController {
     videoService.uploadVideo(video);
   }
 
+  @DeleteMapping("/video/{videoId}")
+  public VideoDto deleteVideo(@PathVariable(value = "videoId") String videoId) {
+    return videoService.removeVideo(videoId);
+  }
 }
