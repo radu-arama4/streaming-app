@@ -22,7 +22,7 @@ public class VideoFormatCheckerServiceImpl implements VideoFormatCheckerService 
 
   @PostConstruct
   private void init() {
-    //TODO: move to dedicated config file
+    // TODO: move to dedicated config file
     String rawAllowedVideoFormats = env.getProperty(ALLOWED_VIDEO_FORMATS_PROP);
     if (rawAllowedVideoFormats != null) {
       allowedVideoFormats = rawAllowedVideoFormats.split(",");
