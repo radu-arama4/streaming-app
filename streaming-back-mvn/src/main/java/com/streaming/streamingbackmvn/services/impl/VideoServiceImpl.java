@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +68,20 @@ public class VideoServiceImpl implements VideoService {
       log.error("Error while uploading the video - " + e.getMessage());
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public List<VideoDto> getAllVideos() {
+    List<VideoDao> existingVideos = (List<VideoDao>) videoRepository.findAll();
+    List<VideoDto> videosToReturn = new LinkedList<>();
+
+    existingVideos.forEach(videoDao -> {
+      VideoDto videoToReturn = new VideoDto();
+      BeanUtils.copyProperties(videoDao, videoToReturn);
+      videosToReturn.add(videoToReturn);
+    });
+
+    return videosToReturn;
   }
 
   @Override

@@ -1,10 +1,12 @@
 package com.streaming.streamingbackmvn.controllers;
 
+import com.streaming.streamingbackmvn.dto.AllVideosDto;
 import com.streaming.streamingbackmvn.dto.ChunkWithMetadataDto;
 import com.streaming.streamingbackmvn.dto.Range;
 import com.streaming.streamingbackmvn.dto.VideoDto;
 import com.streaming.streamingbackmvn.services.VideoFormatCheckerService;
 import com.streaming.streamingbackmvn.services.VideoService;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +29,19 @@ public class VideoController {
   private VideoFormatCheckerService videoFormatCheckerService;
 
   private static final int DEFAULT_CHUNK_SIZE = 3145728; // TODO: add config
+
+  @GetMapping("/video/all")
+  public AllVideosDto getAllVideos() {
+    //TODO: Refactor
+    AllVideosDto existingVideos = new AllVideosDto();
+    List<VideoDto> extractedVideos = videoService.getAllVideos();
+    existingVideos.setAllVideos(extractedVideos);
+    existingVideos.setNrOfVideos(extractedVideos.size());
+
+    log.info("Returning " + extractedVideos.size() + " videos.");
+
+    return existingVideos;
+  }
 
   @GetMapping("/video/{videoId}")
   public ResponseEntity<byte[]> getVideo(
