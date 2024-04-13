@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import Home from "./views/Home";
-import Video from "./views/Video";
+import VideoPage from "./views/videoPlayer/Video";
 
 function App() {
   const router = createBrowserRouter([
@@ -13,7 +13,7 @@ function App() {
     // other pages....
     {
       path: "/video",
-      element: <Video />,
+      element: <VideoPage />,
     },
   ]);
 
